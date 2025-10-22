@@ -25,6 +25,7 @@ public class GameEngine {
     private double width;
     private double height;
 
+    // UI + trạng thái pause/combo
     private GameUI gameUI;
     private boolean isPaused = false;
     private int combo = 0;
@@ -106,7 +107,7 @@ public class GameEngine {
                 gameState = GameState.GAME_OVER;
             } else {
                 resetBall();
-                combo = 0; // reset combo khi mất bóng
+                combo = 0;
             }
         }
 
@@ -116,7 +117,7 @@ public class GameEngine {
     }
 
     private void checkCollisions() {
-        // Va chạm với paddle
+        // Paddle
         if (ball.getY() + ball.getRadius() >= paddle.getY() &&
                 ball.getY() - ball.getRadius() <= paddle.getY() + paddle.getHeight() &&
                 ball.getX() >= paddle.getX() &&
@@ -126,7 +127,7 @@ public class GameEngine {
             ball.setY(paddle.getY() - ball.getRadius());
         }
 
-        // Va chạm với bricks + combo + popup điểm
+        // Bricks + combo + popup điểm
         for (Brick brick : bricks) {
             if (brick.checkCollision(ball)) {
                 ball.reverseY();
@@ -143,7 +144,7 @@ public class GameEngine {
                 int added = (int) Math.round(brick.getPoints() * (1 + combo * 0.5));
                 score += added;
 
-                // Hiện +points tại tâm viên gạch
+                // Popup điểm tại tâm viên gạch
                 double bx = brick.getX() + brick.getWidth() / 2;
                 double by = brick.getY() + brick.getHeight() / 2;
                 gameUI.addFloatingScore(bx, by, added);
@@ -160,26 +161,22 @@ public class GameEngine {
     }
 
     private void render() {
-
         gameUI.update();
-
         gameUI.drawBackground(gc);
 
-        // Game objects
         paddle.draw(gc);
         ball.draw(gc);
         for (Brick brick : bricks) {
             brick.draw(gc);
         }
 
+
         gameUI.drawHUD(gc, score, lives, 1);
 
-        // Pause overlay
         if (isPaused && gameState == GameState.PLAYING) {
             gameUI.drawPauseMenu(gc);
         }
 
-        // Kết thúc game
         if (gameState == GameState.GAME_OVER) {
             drawGameOver();
         } else if (gameState == GameState.VICTORY) {
@@ -199,6 +196,7 @@ public class GameEngine {
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
         gc.fillText("Final Score: " + score, width / 2, height / 2 + 30);
+
     }
 
     private void drawVictory() {
@@ -216,6 +214,7 @@ public class GameEngine {
 
     }
 
+    // Chỉ dùng mũi tên trái/phải và SPACE để pause
     public void handleKeyPress(KeyEvent event) {
         switch (event.getCode()) {
             case LEFT:
@@ -245,18 +244,6 @@ public class GameEngine {
             default:
                 break;
         }
-    }
-
-    private void restart() {
-
-        score = 0;
-        lives = 3;
-        gameState = GameState.PLAYING;
-        bricks.clear();
-        initializeGame();
-        isPaused = false;
-        combo = 0;
-        lastBrickHitTime = 0;
     }
 
     public void start() {
