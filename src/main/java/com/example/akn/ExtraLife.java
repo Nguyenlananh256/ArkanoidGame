@@ -24,7 +24,7 @@ public class ExtraLife extends PowerUp {
 
     public void applyEffect(GameEngine gameEngine) {
         if (!getIsApplied()) {
-            gameEngine.lives --;
+            gameEngine.lives++;
         }
     }
 
