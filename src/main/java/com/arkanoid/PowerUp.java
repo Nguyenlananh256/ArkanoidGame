@@ -35,7 +35,7 @@ public abstract class PowerUp {
     public static PowerUp randomPowerUp(double x, double y) {
         Random random = new Random();
         int r = random.nextInt(100);
-        /*if (r < 10) return new ExpandPaddle(x, y);
+        if (r < 10) return new ExpandPaddle(x, y);
         else if (r < 20) return new FastBall(x, y);
         else if (r < 25) return new ExtraLife(x, y);
         else if (r < 35) return new ExtraBall(x, y);
