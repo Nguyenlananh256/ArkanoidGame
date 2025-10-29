@@ -39,9 +39,9 @@ public abstract class PowerUp {
         else if (r < 20) return new FastBall(x, y);
         else if (r < 25) return new ExtraLife(x, y);
         else if (r < 35) return new ExtraBall(x, y);
-        else if (r < 40) */return new StrongBall(x, y);
+        else if (r < 40) return new StrongBall(x, y);
 
-        //else return null;
+        else return null;
     }
 
     public double getX() { return x; }
