@@ -10,20 +10,23 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GameEngine {
     private Canvas canvas;
     private GraphicsContext gc;
-    private Ball ball;
-    private Paddle paddle;
-    private List<Brick> bricks;
+    public List<Ball> balls;
+    public Paddle paddle;
+    public List<Brick> bricks;
+    private List<PowerUp> powerUps;
+    private List<PowerUp> isAppliedPowerUps;
     private AnimationTimer gameLoop;
     private int score;
-    private int lives;
+    public int lives;
     private GameState gameState;
-    private double width;
-    private double height;
+    public double width;
+    public double height;
 
     // UI + trạng thái pause/combo
     private GameUI gameUI;
@@ -47,9 +50,14 @@ public class GameEngine {
     }
 
     private void initializeGame() {
-        ball = new Ball(width / 2, height - 100, 10);
+        balls = new ArrayList<>();
+        balls.add(new Ball(width / 2, height - 100, 10));
         paddle = new Paddle(width / 2 - 60, height - 40, 120, 15);
         bricks = new ArrayList<>();
+        powerUps = new ArrayList<>();
+        isAppliedPowerUps = new ArrayList<>(Arrays.asList(
+                null, null, null, null, null
+        ));
         createBricks();
     }
 
@@ -77,7 +85,12 @@ public class GameEngine {
             for (int col = 0; col < cols; col++) {
                 double x = offsetX + col * (brickWidth + padding);
                 double y = offsetY + row * (brickHeight + padding);
-                bricks.add(new Brick(x, y, brickWidth, brickHeight, colors[row], points[row]));
+                if (col - row == 3) {
+                    bricks.add(new StrongBrick(x, y, brickWidth, brickHeight, colors[row], points[row]));
+
+                } else {
+                    bricks.add(new Brick(x, y, brickWidth, brickHeight, colors[row], points[row]));
+                }
             }
         }
     }
@@ -97,11 +110,24 @@ public class GameEngine {
     private void update() {
         if (gameState != GameState.PLAYING) return;
 
-        ball.update(width, height);
+        for (Ball b : balls) {
+            b.update(width, height);
+        }
         paddle.update(width);
         checkCollisions();
 
-        if (ball.isOutOfBounds(height)) {
+        // Bóng rơi khỏi biên -> xóa bóng đó
+        List<Ball> toRemove = new ArrayList<>();
+        for (Ball b : balls) {
+            if (b.isOutOfBounds(height)) {
+                toRemove.add(b);
+            }
+        }
+        balls.removeAll(toRemove);
+        toRemove.clear();
+
+        // Không còn bóng nào -> Mất 1 mạng. Hết mạng -> game over
+        if (balls.isEmpty()) {
             lives--;
             if (lives <= 0) {
                 gameState = GameState.GAME_OVER;
@@ -111,53 +137,100 @@ public class GameEngine {
             }
         }
 
-        if (bricks.stream().allMatch(Brick::isDestroyed)) {
+        if (bricks.stream()
+                .filter(brick -> !(brick instanceof SilverBrick))
+                .allMatch(brick -> brick.isDestroyed())) {
             gameState = GameState.VICTORY;
+        }
+
+        for (PowerUp p : powerUps) {
+            p.update(height, this);
+        }
+
+        for (PowerUp p : isAppliedPowerUps) {
+            if (p != null && p.isApplied() && System.currentTimeMillis() - p.getStartTime() > p.getDuration()) {
+                p.removeEffect(this);
+                p.setExpired(true);
+            }
         }
     }
 
     private void checkCollisions() {
         // Paddle
-        if (ball.getY() + ball.getRadius() >= paddle.getY() &&
-                ball.getY() - ball.getRadius() <= paddle.getY() + paddle.getHeight() &&
-                ball.getX() >= paddle.getX() &&
-                ball.getX() <= paddle.getX() + paddle.getWidth()) {
+        for (Ball ball : balls) {
+            if (ball.getY() + ball.getRadius() >= paddle.getY() &&
+                    ball.getY() - ball.getRadius() <= paddle.getY() + paddle.getHeight() &&
+                    ball.getX() >= paddle.getX() &&
+                    ball.getX() <= paddle.getX() + paddle.getWidth()) {
 
-            ball.reverseY();
-            ball.setY(paddle.getY() - ball.getRadius());
+                ball.reverseY();
+                ball.setY(paddle.getY() - ball.getRadius());
+            }
         }
 
         // Bricks + combo + popup điểm
-        for (Brick brick : bricks) {
-            if (brick.checkCollision(ball)) {
-                ball.reverseY();
+        for (Ball ball : balls) {
+            for (Brick brick : bricks) {
+                if (brick.checkCollision(ball)) {
+                    if (ball.isStrong()) {
+                        if (!(brick instanceof SilverBrick)) {
+                            brick.takeHit(bricks, 6, 10);
+                        }
+                        continue;
+                    }
 
-                long currentTime = System.currentTimeMillis();
-                if (currentTime - lastBrickHitTime < 1000) {
-                    combo++;
-                    if (combo > 0) gameUI.showCombo(combo);
-                } else {
-                    combo = 0;
+                    if (brick instanceof SilverBrick) {
+                        ball.reverseY();
+                        continue;
+                    }
+                    brick.takeHit(bricks, 6, 10);
+                    ball.reverseY();
+
+                    long currentTime = System.currentTimeMillis();
+                    if (currentTime - lastBrickHitTime < 1000) {
+                        combo++;
+                        if (combo > 0) gameUI.showCombo(combo);
+                    } else {
+                        combo = 0;
+                    }
+                    lastBrickHitTime = currentTime;
+
+                    int added = (int) Math.round(brick.getPoints() * (1 + combo * 0.5));
+                    score += added;
+
+                    // Popup điểm tại tâm viên gạch
+                    double bx = brick.getX() + brick.getWidth() / 2;
+                    double by = brick.getY() + brick.getHeight() / 2;
+                    gameUI.addFloatingScore(bx, by, added);
+
+                    PowerUp newPower = PowerUp.randomPowerUp(
+                            brick.getX() + brick.getWidth() / 2,
+                            brick.getY() + brick.getHeight() / 2);
+                    if (newPower != null) {
+                        powerUps.add(newPower);
+                    }
+
+                    break;
                 }
-                lastBrickHitTime = currentTime;
+            }
+        }
 
-                int added = (int) Math.round(brick.getPoints() * (1 + combo * 0.5));
-                score += added;
-
-                // Popup điểm tại tâm viên gạch
-                double bx = brick.getX() + brick.getWidth() / 2;
-                double by = brick.getY() + brick.getHeight() / 2;
-                gameUI.addFloatingScore(bx, by, added);
-
-                break;
+        for (PowerUp powerUp : powerUps) {
+            if ( (!powerUp.isDestroyed()) && powerUp.checkCollision(paddle)) {
+                int type = powerUp.getType();
+                if (isAppliedPowerUps.get(type - 1) != null
+                        && isAppliedPowerUps.get(type - 1).isApplied()) {
+                    isAppliedPowerUps.get(type - 1).setStartTime();
+                }
+                isAppliedPowerUps.set(type - 1, powerUp);
+                isAppliedPowerUps.get(type - 1).applyEffect(this);
             }
         }
     }
 
     private void resetBall() {
-        ball.setX(width / 2);
-        ball.setY(height - 100);
-        ball.setDy(-3);
+        balls.clear();
+        balls.add(new Ball(width / 2, height - 100, 10));
     }
 
     private void render() {
@@ -165,9 +238,14 @@ public class GameEngine {
         gameUI.drawBackground(gc);
 
         paddle.draw(gc);
-        ball.draw(gc);
+        for (Ball ball:balls) {
+            ball.draw(gc);
+        }
         for (Brick brick : bricks) {
             brick.draw(gc);
+        }
+        for (PowerUp powerUp : powerUps) {
+            powerUp.draw(gc);
         }
 
 

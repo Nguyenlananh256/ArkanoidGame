@@ -157,6 +157,8 @@ public class Paddle {
     public double getWidth() { return width; }
     public double getHeight() { return height; }
     public double getVelocity() { return velocity; }
+
+    public void setWidth(double width) { this.width = width; }
 }
 
 // Inner class cho trail effect
