@@ -15,6 +15,8 @@ public class FastBall extends PowerUp {
         super.color = Color.rgb(255, 100, 100);
         Color lighter = color.brighter();
         Color darker = color.darker();
+        this.normalSpeed = 1;
+        this.newSpeed = 1.5;
 
         Stop[] stops = new Stop[] {
                 new Stop(0, lighter),
