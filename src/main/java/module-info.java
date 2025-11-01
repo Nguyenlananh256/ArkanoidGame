@@ -7,6 +7,8 @@ module com.arkanoid.a1 {
     requires org.kordamp.bootstrapfx.core;
     requires com.almasb.fxgl.all;
 
-    opens com.arkanoid.a1 to javafx.fxml;
-    exports com.arkanoid.a1;
+    requires javafx.media;
+
+    opens com.arkanoid to javafx.fxml;
+    exports com.arkanoid;
 }
