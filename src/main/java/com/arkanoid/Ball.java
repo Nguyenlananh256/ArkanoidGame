@@ -22,33 +22,43 @@ public class Ball {
         this.x = x;
         this.y = y;
         this.radius = radius;
-        this.dx = 3;
-        this.dy = -3;
-        this.speed = 1;
+
+        this.dx = 3.0;
+        this.dy = -3.0;
+        this.speed = 1.0;
+
         this.color = Color.rgb(255, 100, 100);
         this.strong = false;
 
         Stop[] stops = new Stop[] {
-            new Stop(0, Color.rgb(255, 150, 150)),
-            new Stop(0.5, Color.rgb(255, 100, 100)),
-            new Stop(1, Color.rgb(200, 50, 50))
+                new Stop(0, Color.rgb(255, 150, 150)),
+                new Stop(0.5, Color.rgb(255, 100, 100)),
+                new Stop(1, Color.rgb(200, 50, 50))
         };
         this.gradient = new RadialGradient(0, 0, 0.3, 0.3, 0.5, true, CycleMethod.NO_CYCLE, stops);
     }
 
+    // Cập nhật vị trí + bật tường (trái/phải/trần). Không bật đáy (để GameEngine trừ mạng).
     public void update(double width, double height) {
         x += dx * speed;
         y += dy * speed;
 
-        if (x - radius <= 0 || x + radius >= width) {
+        if (x - radius <= 0) {
+            x = radius;
             dx = -dx;
-            x = Math.max(radius, Math.min(x, width - radius));
+        } else if (x + radius >= width) {
+            x = width - radius;
+            dx = -dx;
         }
 
         if (y - radius <= 0) {
-            dy = -dy;
             y = radius;
+            dy = -dy;
         }
+    }
+
+    public boolean isOutOfBounds(double height) {
+        return (y - radius) > height;
     }
 
     public void draw(GraphicsContext gc) {
@@ -64,22 +74,18 @@ public class Ball {
         gc.setEffect(null);
     }
 
-    public void reverseY() {
-        dy = -dy;
-    }
+    // Helpers
+    public void reverseY() { dy = -dy; }
+    public void reverseX() { dx = -dx; }
 
-    public void reverseX() {
-        dx = -dx;
-    }
-
+    // Getters / Setters
     public double getX() { return x; }
     public double getY() { return y; }
-    public double getRadius() { return radius; }
     public double getDx() { return dx; }
     public double getDy() { return dy; }
+    public double getRadius() { return radius; }
     public double getSpeed() { return speed; }
     public boolean isStrong() { return strong; }
-
 
     public void setX(double x) { this.x = x; }
     public void setY(double y) { this.y = y; }
@@ -87,8 +93,4 @@ public class Ball {
     public void setDy(double dy) { this.dy = dy; }
     public void setSpeed(double speed) { this.speed = speed; }
     public void setStrong(boolean strong) { this.strong = strong; }
-
-    public boolean isOutOfBounds(double height) {
-        return y - radius > height;
-    }
 }

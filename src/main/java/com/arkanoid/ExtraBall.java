@@ -9,7 +9,7 @@ public class ExtraBall extends PowerUp {
 
     public ExtraBall(double x, double y) {
         super(x, y, 10, 0, 3);
-        super.color = Color.rgb(255, 200, 100);
+        super.color = Color.rgb(255, 150, 100);
         Color lighter = color.brighter();
         Color darker = color.darker();
 

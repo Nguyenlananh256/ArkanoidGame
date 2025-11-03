@@ -9,7 +9,7 @@ public class ExtraLife extends PowerUp {
 
     public ExtraLife(double x, double y) {
         super(x, y, 10, 0, 4);
-        super.color = Color.rgb(150, 255, 150);
+        super.color = Color.rgb(255, 150, 100);
         Color lighter = color.brighter();
         Color darker = color.darker();
 

@@ -12,7 +12,7 @@ public class FastBall extends PowerUp {
 
     public FastBall(double x, double y) {
         super(x, y, 10, 10000, 2);
-        super.color = Color.rgb(255, 100, 100);
+        super.color = Color.rgb(255, 150, 100);
         Color lighter = color.brighter();
         Color darker = color.darker();
         this.normalSpeed = 1;
