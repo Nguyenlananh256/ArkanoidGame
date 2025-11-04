@@ -208,6 +208,20 @@ public class GameUI {
         gc.fillText("Press SPACE to continue", width / 2, height / 2 + 20);
     }
 
+    public void drawStartMenu(GraphicsContext gc) {
+        gc.setFill(Color.rgb(0, 0, 0, 0.6));
+        gc.fillRect(0, 0, width, height);
+
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 48));
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.fillText("ARKANOID", width / 2, height / 2 - 60);
+
+        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
+        gc.fillText("Press ENTER to Start", width / 2, height / 2);
+        gc.fillText("← → to move | SPACE to launch | P to pause", width / 2, height / 2 + 40);
+    }
+
     private static class FloatingText {
         double x, y;
         double vy = -30;

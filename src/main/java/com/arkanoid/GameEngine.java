@@ -40,7 +40,6 @@ public class GameEngine {
 
     // UI + pause/combo
     private final GameUI gameUI;
-    private boolean isPaused = false;
     private int combo = 0;
     private long lastBrickHitTime = 0;
 
@@ -51,7 +50,7 @@ public class GameEngine {
     private int levelRows = 6;
     private int levelCols = 10;
 
-    // Bóng dính vợt lúc đầu
+    // Bóng dính thanh trượt lúc đầu
     private boolean ballAttached = true;
 
     // Âm thanh hiệu ứng va chạm
@@ -68,7 +67,7 @@ public class GameEngine {
 
         this.score = 0;
         this.lives = 3;
-        this.gameState = GameState.PLAYING;
+        this.gameState = GameState.START_MENU;
 
         this.gameUI = new GameUI(width, height);
         this.levelManager = new LevelManager(width, height);
@@ -142,12 +141,35 @@ public class GameEngine {
         gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                if (gameState == GameState.PLAYING && !isPaused) {
+                if (gameState == GameState.PLAYING) {
                     update();
                 }
                 render();
             }
         };
+    }
+
+    public void start() {
+        if (gameLoop != null) gameLoop.start();
+        if (gameState == GameState.PLAYING && bgmPlayer != null) bgmPlayer.play();
+    }
+
+    public void restartGame() {
+        score = 0;
+        lives = 3;
+        currentLevel = 1;
+        combo = 0;
+        powerUps.clear();
+        isAppliedPowerUps.replaceAll(p -> null);
+        bricks = levelManager.buildLevel(currentLevel);
+        balls.clear();
+        balls.add(new Ball(width / 2, height - 100, 10));
+        //reset paddle
+        attachBallToPaddle();
+        gameState = GameState.PLAYING;
+        if (bgmPlayer != null) {
+            bgmPlayer.play();
+        }
     }
 
     private void update() {
@@ -187,8 +209,7 @@ public class GameEngine {
                 .allMatch(Brick::isDestroyed);
         if (allBreakablesGone) {
             if (currentLevel < MAX_LEVEL) {
-                currentLevel++;
-                loadLevel(currentLevel);
+                gameState = GameState.LEVEL_COMPLETED;
             } else {
                 gameState = GameState.VICTORY;
                 if (bgmPlayer != null) bgmPlayer.stop();
@@ -208,7 +229,7 @@ public class GameEngine {
     private void checkCollisions() {
         if (ballAttached) return;
 
-        // Bóng - vợt
+        // Bóng - thanh
         for (Ball ball : balls) {
             if (ball.getDy() > 0) {
                 boolean hit = (ball.getY() + ball.getRadius() >= paddle.getY()) &&
@@ -291,7 +312,7 @@ public class GameEngine {
                     } else if (!brick.isDestroyed()) {
                         addHitScoreOnly(brick);
                     }
-                    // Cho xuyên, nếu muốn bật lại thì thêm phản xạ tương tự nhánh dưới
+                    // Cho xuyên
                     continue;
                 }
 
@@ -401,13 +422,35 @@ public class GameEngine {
 
         gameUI.drawHUD(gc, score, lives, currentLevel);
 
-        if (isPaused && gameState == GameState.PLAYING) {
+
+        if(gameState == GameState.START_MENU) {
+            gameUI.drawStartMenu(gc);
+        }else if (gameState == GameState.PAUSED) {
             gameUI.drawPauseMenu(gc);
+        } else if (gameState == GameState.LEVEL_COMPLETED) {
+            drawLevelCompleted();
         } else if (gameState == GameState.GAME_OVER) {
             drawGameOver();
         } else if (gameState == GameState.VICTORY) {
             drawVictory();
         }
+    }
+
+    private void drawLevelCompleted() {
+        gc.setFill(Color.rgb(0, 0, 0, 0.72));
+        gc.fillRect(0, 0, width, height);
+
+        gc.setFill(Color.rgb(255, 215, 100));
+        gc.setFont(Font.font("Arial", FontWeight.BOLD, 44));
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.fillText("LEVEL " + currentLevel + " COMPLETED", width / 2, height / 2 - 40);
+
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
+        gc.fillText("Score: " + score, width / 2, height / 2 + 5);
+
+        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 18));
+        gc.fillText("Press ENTER to continue to the next level", width / 2, height / 2 + 45);
     }
 
     private void drawGameOver() {
@@ -422,6 +465,7 @@ public class GameEngine {
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
         gc.fillText("Final Score: " + score, width / 2, height / 2 + 30);
+        gc.fillText("Press ENTER to restart", width / 2, height / 2 + 70);
     }
 
     private void drawVictory() {
@@ -436,6 +480,7 @@ public class GameEngine {
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
         gc.fillText("Final Score: " + score, width / 2, height / 2 + 30);
+        gc.fillText("Press ENTER to restart", width / 2, height / 2 + 70);
     }
 
     // Điều khiển
@@ -448,7 +493,9 @@ public class GameEngine {
                 paddle.setMovingRight(true);
                 break;
             case SPACE:
-                if (gameState != GameState.PLAYING) break;
+                if (gameState != GameState.PLAYING && gameState != GameState.PAUSED) {
+                    break;
+                }
                 if (ballAttached) {
                     Ball ball = balls.get(0);
 
@@ -470,10 +517,34 @@ public class GameEngine {
                     ball.setSpeed(1.0);
                     ballAttached = false;
                 } else {
-                    isPaused = !isPaused;
                     if (bgmPlayer != null) {
-                        if (isPaused) bgmPlayer.pause();
-                        else bgmPlayer.play();
+                        if (gameState == GameState.PAUSED) {
+                            bgmPlayer.pause();
+                        }
+                        else {
+                            bgmPlayer.play();
+                        }
+                    }
+                }
+                break;
+            case ENTER:
+                if (gameState == GameState.START_MENU) {
+                    restartGame();
+                } else if (gameState == GameState.GAME_OVER || gameState == GameState.VICTORY) {
+                    restartGame();
+                } else if (gameState == GameState.LEVEL_COMPLETED) {
+                    if (currentLevel < MAX_LEVEL) {
+                        currentLevel++;
+                        loadLevel(currentLevel);
+                        gameState = GameState.PLAYING;
+                        if (bgmPlayer != null) {
+                            bgmPlayer.play();
+                        }
+                    } else {
+                        gameState = GameState.VICTORY;
+                        if (bgmPlayer != null) {
+                            bgmPlayer.stop();
+                        }
                     }
                 }
                 break;
@@ -495,11 +566,6 @@ public class GameEngine {
         }
     }
 
-    public void start() {
-        if (gameLoop != null) gameLoop.start();
-        if (bgmPlayer != null) bgmPlayer.play();
-    }
-
     public Canvas getCanvas() {
         return canvas;
     }
@@ -510,6 +576,13 @@ public class GameEngine {
             try { bgmPlayer.dispose(); } catch (Exception ignored) {}
         }
     }
+}
 
-    private enum GameState { PLAYING, GAME_OVER, VICTORY }
+enum GameState {
+    START_MENU,
+    PLAYING,
+    PAUSED,
+    GAME_OVER,
+    VICTORY,
+    LEVEL_COMPLETED
 }
