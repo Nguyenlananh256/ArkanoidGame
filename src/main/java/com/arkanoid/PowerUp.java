@@ -7,10 +7,7 @@ import javafx.scene.paint.RadialGradient; // Giữ để các lớp con vẫn g�
 
 import java.util.Random;
 
-public abstract class PowerUp {
-
-    private double x;
-    private double y;
+public abstract class PowerUp extends GameObject {
     private double radius;
     private int type;
     private final long duration;
@@ -24,8 +21,7 @@ public abstract class PowerUp {
     public RadialGradient gradient;
 
     public PowerUp(double x, double y, double radius, long duration, int type) {
-        this.x = x;
-        this.y = y;
+        super(x, y);
         this.radius = radius;
         this.duration = duration;
         this.type = type;
@@ -70,6 +66,7 @@ public abstract class PowerUp {
     }
 
     // Vẽ hộp quà xanh lá thống nhất (không dùng gradient nữa)
+    @Override
     public void draw(GraphicsContext gc) {
         if (isDestroyed()) return;
 

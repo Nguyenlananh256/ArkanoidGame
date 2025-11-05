@@ -7,9 +7,10 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.Stop;
 import javafx.scene.effect.DropShadow;
 
-public class Ball {
-    private double x;
-    private double y;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Ball extends GameObject {
     private double dx;
     private double dy;
     private double radius;
@@ -19,8 +20,7 @@ public class Ball {
     private boolean strong;
 
     public Ball(double x, double y, double radius) {
-        this.x = x;
-        this.y = y;
+        super(x, y);
         this.radius = radius;
 
         this.dx = 3.0;
@@ -61,7 +61,9 @@ public class Ball {
         return (y - radius) > height;
     }
 
+    @Override
     public void draw(GraphicsContext gc) {
+        gc.save();
         DropShadow shadow = new DropShadow();
         shadow.setColor(Color.rgb(0, 0, 0, 0.5));
         shadow.setRadius(10);

@@ -11,8 +11,9 @@ import java.util.List;
 
 enum BrickKind { NORMAL, STRONG, SILVER, BOMB }
 
-public class Brick {
-    private double x, y, width, height;
+public class Brick extends GameObject {
+    private double width;
+    private double height;
     private Color color;
     private LinearGradient gradient;
     public int hitPoints;
@@ -25,7 +26,9 @@ public class Brick {
     }
 
     protected Brick(double x, double y, double width, double height, BrickKind kind, int points) {
-        this.x = x; this.y = y; this.width = width; this.height = height;
+        super(x, y);
+        this.width = width;
+        this.height = height;
         this.kind = kind;
         this.points = points;
         this.hitPoints = 1;
@@ -52,6 +55,7 @@ public class Brick {
         }
     }
 
+    @Override
     public void draw(GraphicsContext gc) {
         if (isDestroyed()) return;
         DropShadow shadow = new DropShadow();

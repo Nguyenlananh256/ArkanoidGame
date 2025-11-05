@@ -1,5 +1,9 @@
 package com.arkanoid;
 
+import com.arkanoid.BombBrick;
+import com.arkanoid.SilverBrick;
+import com.arkanoid.StrongBrick;
+
 import java.util.ArrayList;
 import java.util.List;
 

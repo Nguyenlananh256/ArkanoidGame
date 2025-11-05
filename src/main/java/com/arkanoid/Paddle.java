@@ -6,9 +6,7 @@ import javafx.scene.effect.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Paddle {
-    private double x;
-    private double y;
+public class Paddle extends GameObject {
     private double width;
     private double height;
     private double velocity = 0;  // Vận tốc hiện tại
@@ -26,8 +24,7 @@ public class Paddle {
     private List<PaddleTrail> trails = new ArrayList<>();
 
     public Paddle(double x, double y, double width, double height) {
-        this.x = x;
-        this.y = y;
+        super(x, y);
         this.width = width;
         this.height = height;
         this.movingLeft = false;
@@ -79,6 +76,7 @@ public class Paddle {
         }
     }
 
+    @Override
     public void draw(GraphicsContext gc) {
         // Draw trails first
         for (PaddleTrail trail : trails) {
@@ -167,13 +165,13 @@ public class Paddle {
 }
 
 // Inner class cho trail effect
-class PaddleTrail {
-    private double x, y, width, height;
+class PaddleTrail extends GameObject {
+    private double width;
+    private double height;
     private double opacity;
 
     public PaddleTrail(double x, double y, double width, double height, double intensity) {
-        this.x = x;
-        this.y = y;
+        super(x, y);
         this.width = width;
         this.height = height;
         this.opacity = intensity * 0.3;
@@ -184,6 +182,7 @@ class PaddleTrail {
         return opacity > 0;
     }
 
+    @Override
     public void draw(GraphicsContext gc) {
         gc.setFill(Color.rgb(100, 150, 255, opacity));
         gc.fillRoundRect(x, y, width, height, 15, 15);
