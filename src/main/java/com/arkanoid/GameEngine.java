@@ -441,15 +441,15 @@ public class GameEngine {
         gc.fillRect(0, 0, width, height);
 
         gc.setFill(Color.rgb(255, 215, 100));
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 44));
+        gc.setFont(Font.font("Times New Roman", FontWeight.BOLD, 44));
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText("LEVEL " + currentLevel + " COMPLETED", width / 2, height / 2 - 40);
 
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
+        gc.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 24));
         gc.fillText("Score: " + score, width / 2, height / 2 + 5);
 
-        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 18));
+        gc.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 18));
         gc.fillText("Press ENTER to continue to the next level", width / 2, height / 2 + 45);
     }
 
@@ -458,12 +458,12 @@ public class GameEngine {
         gc.fillRect(0, 0, width, height);
 
         gc.setFill(Color.rgb(255, 100, 100));
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 48));
+        gc.setFont(Font.font("Times New Roman", FontWeight.BOLD, 48));
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText("GAME OVER", width / 2, height / 2 - 20);
 
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
+        gc.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 24));
         gc.fillText("Final Score: " + score, width / 2, height / 2 + 30);
         gc.fillText("Press ENTER to restart", width / 2, height / 2 + 70);
     }
@@ -473,12 +473,12 @@ public class GameEngine {
         gc.fillRect(0, 0, width, height);
 
         gc.setFill(Color.rgb(100, 255, 100));
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 48));
+        gc.setFont(Font.font("Times New Roman", FontWeight.BOLD, 48));
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText("VICTORY!", width / 2, height / 2 - 20);
 
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 24));
+        gc.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 24));
         gc.fillText("Final Score: " + score, width / 2, height / 2 + 30);
         gc.fillText("Press ENTER to restart", width / 2, height / 2 + 70);
     }
@@ -516,15 +516,6 @@ public class GameEngine {
                     ball.setDy(newDy);
                     ball.setSpeed(1.0);
                     ballAttached = false;
-                } else {
-                    if (bgmPlayer != null) {
-                        if (gameState == GameState.PAUSED) {
-                            bgmPlayer.pause();
-                        }
-                        else {
-                            bgmPlayer.play();
-                        }
-                    }
                 }
                 break;
             case ENTER:
@@ -545,6 +536,24 @@ public class GameEngine {
                         if (bgmPlayer != null) {
                             bgmPlayer.stop();
                         }
+                    }
+                }
+                break;
+            case P:
+                if (gameState != GameState.PLAYING && gameState != GameState.PAUSED) {
+                    break;
+                }
+                if (gameState == GameState.PLAYING) {
+                    gameState = GameState.PAUSED;
+                } else {
+                    gameState = GameState.PLAYING;
+                }
+                if (bgmPlayer != null) {
+                    if (gameState == GameState.PAUSED) {
+                        bgmPlayer.pause();
+                    }
+                    else {
+                        bgmPlayer.play();
                     }
                 }
                 break;

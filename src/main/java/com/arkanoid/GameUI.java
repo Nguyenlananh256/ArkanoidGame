@@ -130,7 +130,7 @@ public class GameUI {
 
         double baseSize = 24;
         double size = baseSize + scorePulse * 6;
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, size));
+        gc.setFont(Font.font("Time New Roman", FontWeight.BOLD, size));
 
         DropShadow glow = new DropShadow();
         glow.setColor(Color.rgb(0, 200, 255, 0.9));
@@ -148,7 +148,7 @@ public class GameUI {
 
         gc.setEffect(null);
 
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+        gc.setFont(Font.font("Time New Roman", FontWeight.BOLD, 20));
         gc.setFill(Color.WHITE);
         gc.setTextAlign(TextAlignment.RIGHT);
         gc.fillText("LIVES: " + lives, width - 20, 36);
@@ -169,7 +169,7 @@ public class GameUI {
         glow.setRadius(24);
         gc.setEffect(glow);
 
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 40));
+        gc.setFont(Font.font("Time New Roman", FontWeight.BOLD, 40));
         gc.setFill(Color.rgb(255, 220, 50, comboAlpha));
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText(comboText, 0, 0);
@@ -197,13 +197,13 @@ public class GameUI {
         glow.setRadius(25);
         gc.setEffect(glow);
 
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 56));
+        gc.setFont(Font.font("Time New Roman", FontWeight.BOLD, 56));
         gc.setFill(Color.WHITE);
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText("PAUSED", width / 2, height / 2 - 30);
 
         gc.setEffect(null);
-        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 22));
+        gc.setFont(Font.font("Time New Roman", FontWeight.NORMAL, 22));
         gc.setFill(Color.rgb(230, 240, 255));
         gc.fillText("Press SPACE to continue", width / 2, height / 2 + 20);
     }
@@ -212,12 +212,13 @@ public class GameUI {
         gc.setFill(Color.rgb(0, 0, 0, 0.6));
         gc.fillRect(0, 0, width, height);
 
-        gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Arial", FontWeight.BOLD, 48));
+        gc.setFill(Color.YELLOW);
+        gc.setFont(Font.font("Impact", FontWeight.BOLD, 100));
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText("ARKANOID", width / 2, height / 2 - 60);
+        gc.fillText("ARKANOID", width / 2, height / 2 - 80);
 
-        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 20));
+        gc.setFill(Color.WHITE);
+        gc.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
         gc.fillText("Press ENTER to Start", width / 2, height / 2);
         gc.fillText("← → to move | SPACE to launch | P to pause", width / 2, height / 2 + 40);
     }
@@ -244,7 +245,7 @@ public class GameUI {
 
         void draw(GraphicsContext gc) {
             double alpha = Math.max(0, life);
-            gc.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+            gc.setFont(Font.font("Times New Roman", FontWeight.BOLD, 18));
             gc.setFill(color.deriveColor(0, 1, 1, alpha));
             gc.fillText(text, x, y);
         }
