@@ -22,9 +22,9 @@ public class GameEngine {
     private final GraphicsContext gc;
 
     // Thực thể game
-    public List<Ball> balls;
-    public Paddle paddle;
-    public List<Brick> bricks;
+    private List<Ball> balls;
+    private Paddle paddle;
+    private List<Brick> bricks;
     private List<PowerUp> powerUps;
     private List<PowerUp> isAppliedPowerUps;
 
@@ -33,10 +33,10 @@ public class GameEngine {
 
     // Trạng thái/điểm số
     private int score;
-    public int lives;
+    private int lives;
     private GameState gameState;
-    public final double width;
-    public final double height;
+    private final double width;
+    private final double height;
 
     // UI + pause/combo
     private final GameUI gameUI;
@@ -585,6 +585,11 @@ public class GameEngine {
             try { bgmPlayer.dispose(); } catch (Exception ignored) {}
         }
     }
+
+    public List<Ball> getBalls() { return balls; }
+    public Paddle getPaddle() { return paddle; }
+    public double getHeight() { return height; }
+    public void addLive() {lives++;}
 }
 
 enum GameState {

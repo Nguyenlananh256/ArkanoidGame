@@ -1,36 +1,30 @@
 package com.arkanoid;
 
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 
 public class ExpandPaddle extends PowerUp {
 
     private double normalPaddle;
     private double newPaddle;
+
     public ExpandPaddle(double x, double y) {
         super(x, y, 10, 10000, 1);
+        this.normalPaddle = 120;
+        this.newPaddle = 180;
+    }
 
-        normalPaddle = 120;
-        newPaddle = 180;
-        super.color = Color.rgb(255, 150, 100);
-        Color lighter = color.brighter();
-        Color darker = color.darker();
-
-        Stop[] stops = new Stop[] {
-                new Stop(0, lighter),
-                new Stop(0.5, color),
-                new Stop(1, darker)
-        };
-        super.gradient = new RadialGradient(0, 0, 0.3, 0.3, 0.5, true, CycleMethod.NO_CYCLE, stops);
+    public void draw(GraphicsContext gc) {
+        if (isDestroyed()) return;
+        gc.save();
+        Image img = new Image(getClass().getResourceAsStream("/images/ExpandPaddle.png"));
+        gc.drawImage(img, x - getRadius(), y - getRadius(), getRadius() * 2, getRadius() * 2);
     }
 
     @Override
     public void applyEffect(GameEngine gameEngine) {
         if (!isApplied()) {
-            double newWidth = gameEngine.paddle.getWidth() * 1.5;
-            gameEngine.paddle.setWidth(newPaddle);
+            gameEngine.getPaddle().setWidth(newPaddle);
 
             super.setApplied(true);
             super.setStartTime();
@@ -40,7 +34,7 @@ public class ExpandPaddle extends PowerUp {
     @Override
     public void removeEffect(GameEngine gameEngine) {
         if (isApplied() && getExpired()) {
-            gameEngine.paddle.setWidth(normalPaddle);
+            gameEngine.getPaddle().setWidth(normalPaddle);
 
             super.setApplied(false);
         }
