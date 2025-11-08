@@ -40,4 +40,3 @@ public class ExpandPaddle extends PowerUp {
         }
     }
 }
-
