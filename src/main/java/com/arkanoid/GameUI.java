@@ -32,6 +32,9 @@ public class GameUI {
     // Popup điểm
     private final List<FloatingText> floatTexts = new ArrayList<>();
 
+    //High scores
+    private HighScoreManager highScoreManager = HighScoreManager.getInstance();
+
     public GameUI(double width, double height) {
         this.width = width;
         this.height = height;
@@ -209,18 +212,41 @@ public class GameUI {
     }
 
     public void drawStartMenu(GraphicsContext gc) {
-        gc.setFill(Color.rgb(0, 0, 0, 0.6));
+        gc.setFill(Color.rgb(0, 0, 0, 1));
         gc.fillRect(0, 0, width, height);
 
-        gc.setFill(Color.YELLOW);
-        gc.setFont(Font.font("Impact", FontWeight.BOLD, 100));
+        //Font.loadFont(getClass().getResourceAsStream("/font/Arka_solid.ttf"), 100)
+
+        gc.setEffect(new DropShadow(20, Color.web("#0044FF"))); // ánh cam
+        gc.setFill(Color.web("#00FFFF")); // vàng kim
+        gc.setFont(Font.loadFont(getClass().getResourceAsStream("/font/Arka_solid.ttf"), 100));
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText("ARKANOID", width / 2, height / 2 - 80);
+        gc.fillText("ARKANOID", width / 2, 150);
+        gc.setEffect(null);
+
 
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-        gc.fillText("Press ENTER to Start", width / 2, height / 2);
-        gc.fillText("← → to move | SPACE to launch | P to pause", width / 2, height / 2 + 40);
+        gc.setFont(Font.loadFont(getClass().getResourceAsStream("/font/PressStart2P-Regular.ttf"), 15));
+        gc.fillText("Press ENTER to Start...", width / 2, height - 10);
+        gc.fillText("← → to move | SPACE to launch/pause", width / 2, height - 80);
+
+        drawScoreBoard(gc);
+    }
+
+    public void drawScoreBoard(GraphicsContext gc) {
+        gc.setFill(Color.GOLD);
+        gc.setFont(Font.loadFont(getClass().getResourceAsStream("/font/PressStart2P-Regular.ttf"), 20));
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.fillText("SCORE BOARD", width / 2, 210);
+        int y = 250;
+        int rank = 1;
+        gc.setFont(Font.loadFont(getClass().getResourceAsStream("/font/PressStart2P-Regular.ttf"), 15));
+        for (Score score : highScoreManager.getScores()) {
+            gc.setTextAlign(TextAlignment.LEFT);
+            gc.fillText(rank + " " + score.name + ": " + score.score, width / 2 - 100, y);
+            y += 40;
+            rank++;
+        }
     }
 
     private static class FloatingText {

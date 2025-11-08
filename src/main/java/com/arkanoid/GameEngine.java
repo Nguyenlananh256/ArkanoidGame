@@ -3,6 +3,7 @@ package com.arkanoid;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
@@ -15,6 +16,7 @@ import javafx.scene.text.TextAlignment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class GameEngine {
     // Canvas + context
@@ -58,6 +60,11 @@ public class GameEngine {
 
     // Nhạc nền
     private MediaPlayer bgmPlayer;
+
+    // High scores
+    private HighScoreManager highScoreManager = HighScoreManager.getInstance();
+    private String playerName = "";
+    private boolean nameEntered = false;
 
     public GameEngine(double width, double height) {
         this.width = width;
@@ -166,10 +173,6 @@ public class GameEngine {
         balls.add(new Ball(width / 2, height - 100, 10));
         //reset paddle
         attachBallToPaddle();
-        gameState = GameState.PLAYING;
-        if (bgmPlayer != null) {
-            bgmPlayer.play();
-        }
     }
 
     private void update() {
@@ -197,6 +200,7 @@ public class GameEngine {
             lives--;
             if (lives <= 0) {
                 gameState = GameState.GAME_OVER;
+                playerName = "";
                 if (bgmPlayer != null) bgmPlayer.stop();
             } else {
                 resetBall();
@@ -212,6 +216,7 @@ public class GameEngine {
                 gameState = GameState.LEVEL_COMPLETED;
             } else {
                 gameState = GameState.VICTORY;
+                playerName = "";
                 if (bgmPlayer != null) bgmPlayer.stop();
             }
         }
@@ -465,7 +470,10 @@ public class GameEngine {
         gc.setFill(Color.WHITE);
         gc.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 24));
         gc.fillText("Final Score: " + score, width / 2, height / 2 + 30);
-        gc.fillText("Press ENTER to restart", width / 2, height / 2 + 70);
+        gc.fillText("Press ENTER to save & restart", width / 2, height - 20);
+
+        gc.fillText("Enter your name:", width / 2, height / 2 + 50);
+        gc.fillText(playerName, width / 2, height / 2 + 70);
     }
 
     private void drawVictory() {
@@ -516,13 +524,36 @@ public class GameEngine {
                     ball.setDy(newDy);
                     ball.setSpeed(1.0);
                     ballAttached = false;
+                } else {
+                    if (gameState == GameState.PLAYING) {
+                        gameState = GameState.PAUSED;
+                    } else {
+                        gameState = GameState.PLAYING;
+                    }
+                    if (bgmPlayer != null) {
+                        if (gameState == GameState.PAUSED) {
+                            bgmPlayer.pause();
+                        }
+                        else {
+                            bgmPlayer.play();
+                        }
+                    }
                 }
                 break;
             case ENTER:
                 if (gameState == GameState.START_MENU) {
                     restartGame();
+                    gameState = GameState.PLAYING;
+                    if (bgmPlayer != null) {
+                        bgmPlayer.play();
+                    }
                 } else if (gameState == GameState.GAME_OVER || gameState == GameState.VICTORY) {
-                    restartGame();
+                    if (!playerName.isEmpty()) {
+                        highScoreManager.addScore(playerName, score);
+                        highScoreManager.loadScores();
+                        restartGame();
+                        gameState = GameState.START_MENU;
+                    }
                 } else if (gameState == GameState.LEVEL_COMPLETED) {
                     if (currentLevel < MAX_LEVEL) {
                         currentLevel++;
@@ -539,25 +570,23 @@ public class GameEngine {
                     }
                 }
                 break;
-            case P:
-                if (gameState != GameState.PLAYING && gameState != GameState.PAUSED) {
+            case ESCAPE:
+                if (gameState == GameState.START_MENU) {
                     break;
-                }
-                if (gameState == GameState.PLAYING) {
-                    gameState = GameState.PAUSED;
                 } else {
-                    gameState = GameState.PLAYING;
-                }
-                if (bgmPlayer != null) {
-                    if (gameState == GameState.PAUSED) {
-                        bgmPlayer.pause();
-                    }
-                    else {
-                        bgmPlayer.play();
-                    }
+                    highScoreManager.loadScores();
+                    gameState = GameState.START_MENU;
                 }
                 break;
             default:
+                if (event.getCode() == KeyCode.BACK_SPACE) {
+                    if (!playerName.isEmpty()) {
+                        playerName = playerName.substring(0, playerName.length() - 1);
+                    }
+                } else {
+                    String key = event.getText();
+                    playerName += key.toUpperCase();
+                }
                 break;
         }
     }

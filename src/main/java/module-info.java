@@ -8,6 +8,7 @@ module com.arkanoid.a1 {
     requires com.almasb.fxgl.all;
 
     requires javafx.media;
+    requires annotations;
 
     opens com.arkanoid to javafx.fxml;
     exports com.arkanoid;
