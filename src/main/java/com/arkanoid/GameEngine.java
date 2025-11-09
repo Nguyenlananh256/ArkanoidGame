@@ -138,10 +138,13 @@ public class GameEngine {
 
         paddle.setX(Math.max(0, Math.min(width - paddle.getWidth(), width / 2 - paddle.getWidth() / 2)));
 
+        balls.clear();
         if (balls.isEmpty()) {
             balls.add(new Ball(width / 2, height - 100, 10));
         }
         attachBallToPaddle();
+
+        powerUps.clear();
     }
 
     private void setupGameLoop() {
@@ -574,8 +577,10 @@ public class GameEngine {
                 if (gameState == GameState.START_MENU) {
                     break;
                 } else {
-                    highScoreManager.loadScores();
                     gameState = GameState.START_MENU;
+                    if (bgmPlayer != null) {
+                        bgmPlayer.stop();
+                    }
                 }
                 break;
             default:

@@ -101,11 +101,11 @@ public class LevelManager {
 
                 boolean border = (row == 0) || (row == rows - 1) || (col == 0) || (col == cols - 1);
                 if (border) {
-                    bricks.add(new SilverBrick(x, y, brickWidth, brickHeight, 0));
+                    bricks.add(new StrongBrick(x, y, brickWidth, brickHeight, points[Math.min(row, points.length - 1)]));
                 } else if ((row + col) % 2 == 0) {
                     bricks.add(new BombBrick(x, y, brickWidth, brickHeight, points[Math.min(row, points.length - 1)]));
                 } else {
-                    bricks.add(new StrongBrick(x, y, brickWidth, brickHeight, points[Math.min(row, points.length - 1)]));
+                    bricks.add(new SilverBrick(x, y, brickWidth, brickHeight, 0));
                 }
             }
         }
