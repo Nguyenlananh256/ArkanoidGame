@@ -3,12 +3,16 @@ package com.arkanoid;
 import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
@@ -37,20 +41,19 @@ public class GameEngine {
     private int score;
     private int lives;
     private GameState gameState;
-    private final double width;
-    private final double height;
+    private double width = GameConstants.WINDOW_WIDTH;
+    private double height = GameConstants.WINDOW_HEIGHT;
 
     // UI + pause/combo
     private final GameUI gameUI;
-    private int combo = 0;
+    private int combo = GameConstants.INITIAL_COMBO;
     private long lastBrickHitTime = 0;
 
     // Level
     private final LevelManager levelManager;
-    private int currentLevel = 1;
-    private static final int MAX_LEVEL = 3;
-    private int levelRows = 6;
-    private int levelCols = 10;
+    private int currentLevel = GameConstants.INITIAL_LEVEL;
+    private int levelRows = GameConstants.DEFAULT_BRICK_ROWS;
+    private int levelCols = GameConstants.DEFAULT_BRICK_COLS;
 
     // Bóng dính thanh trượt lúc đầu
     private boolean ballAttached = true;
@@ -66,25 +69,23 @@ public class GameEngine {
     private String playerName = "";
     private boolean nameEntered = false;
 
-    public GameEngine(double width, double height) {
-        this.width = width;
-        this.height = height;
+    public GameEngine() {
         this.canvas = new Canvas(width, height);
         this.gc = canvas.getGraphicsContext2D();
 
-        this.score = 0;
-        this.lives = 3;
+        this.score = GameConstants.INITIAL_SCORE;
+        this.lives = GameConstants.INITIAL_LIVES;
         this.gameState = GameState.START_MENU;
 
-        this.gameUI = new GameUI(width, height);
-        this.levelManager = new LevelManager(width, height);
+        this.gameUI = new GameUI();
+        this.levelManager = new LevelManager();
 
-        // Âm va chạm (ví dụ /audio/vacham.wav)
+        // Âm va chạm
         try {
             hitClip = new AudioClip(
-                    getClass().getResource("/audio/vacham.wav").toExternalForm()
+                    getClass().getResource(GameConstants.HIT_SOUND_PATH).toExternalForm()
             );
-            hitClip.setVolume(0.8);
+            hitClip.setVolume(GameConstants.HIT_VOLUME);
         } catch (Exception e) {
             System.err.println("Cannot load hit sound: " + e.getMessage());
         }
@@ -92,11 +93,11 @@ public class GameEngine {
         // Nhạc nền
         try {
             Media bgm = new Media(
-                    getClass().getResource("/audio/backgroundaudio.mp3").toExternalForm()
+                    getClass().getResource(GameConstants.BGM_PATH).toExternalForm()
             );
             bgmPlayer = new MediaPlayer(bgm);
             bgmPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-            bgmPlayer.setVolume(0.5);
+            bgmPlayer.setVolume(GameConstants.BGM_VOLUME);
         } catch (Exception e) {
             System.err.println("Cannot load BGM: " + e.getMessage());
         }
@@ -107,9 +108,10 @@ public class GameEngine {
 
     private void initializeGame() {
         balls = new ArrayList<>();
-        balls.add(new Ball(width / 2, height - 100, 10));
+        balls.add(new Ball(GameConstants.BALL_X, GameConstants.BALL_Y, GameConstants.BALL_RADIUS));
 
-        paddle = new Paddle(width / 2 - 60, height - 40, 120, 15);
+        paddle = new Paddle(GameConstants.PADDLE_X, GameConstants.PADDLE_Y,
+                GameConstants.PADDLE_WIDTH, GameConstants.PADDLE_HEIGHT);
 
         bricks = new ArrayList<>();
         powerUps = new ArrayList<>();
@@ -123,12 +125,12 @@ public class GameEngine {
         ballAttached = true;
         Ball ball = balls.get(0);
         double cx = paddle.getX() + paddle.getWidth() / 2.0;
-        double cy = paddle.getY() - ball.getRadius() - 0.01;
+        double cy = paddle.getY() - GameConstants.AFTER_HIT_OFFSET;
         ball.setX(cx);
         ball.setY(cy);
         ball.setDx(0);
         ball.setDy(0);
-        ball.setSpeed(1.0);
+        ball.setSpeed(GameConstants.BALL_START_SPEED);
     }
 
     private void loadLevel(int level) {
@@ -140,7 +142,7 @@ public class GameEngine {
 
         balls.clear();
         if (balls.isEmpty()) {
-            balls.add(new Ball(width / 2, height - 100, 10));
+            balls.add(new Ball(GameConstants.BALL_X, GameConstants.BALL_Y, GameConstants.BALL_RADIUS));
         }
         attachBallToPaddle();
 
@@ -165,27 +167,27 @@ public class GameEngine {
     }
 
     public void restartGame() {
-        score = 0;
-        lives = 3;
-        currentLevel = 1;
-        combo = 0;
+        score = GameConstants.INITIAL_SCORE;
+        lives = GameConstants.INITIAL_LIVES;
+        currentLevel = GameConstants.INITIAL_LEVEL;
+        combo = GameConstants.INITIAL_COMBO;
         powerUps.clear();
         isAppliedPowerUps.replaceAll(p -> null);
         bricks = levelManager.buildLevel(currentLevel);
         balls.clear();
-        balls.add(new Ball(width / 2, height - 100, 10));
-        //reset paddle
+        balls.add(new Ball(GameConstants.BALL_X, GameConstants.BALL_Y, GameConstants.BALL_RADIUS));
         attachBallToPaddle();
     }
 
     private void update() {
-        if (gameState != GameState.PLAYING) return;
-
+        if (gameState != GameState.PLAYING) {
+            return;
+        }
         if (ballAttached) {
             Ball ball = balls.get(0);
             double cx = paddle.getX() + paddle.getWidth() / 2.0;
             ball.setX(cx);
-            ball.setY(paddle.getY() - ball.getRadius() - 0.01);
+            ball.setY(paddle.getY() - GameConstants.AFTER_HIT_OFFSET);
         } else {
             for (Ball b : balls) b.update(width, height);
             checkCollisions();
@@ -207,7 +209,7 @@ public class GameEngine {
                 if (bgmPlayer != null) bgmPlayer.stop();
             } else {
                 resetBall();
-                combo = 0;
+                combo = GameConstants.INITIAL_COMBO;
             }
         }
 
@@ -215,7 +217,7 @@ public class GameEngine {
                 .filter(br -> !(br instanceof SilverBrick))
                 .allMatch(Brick::isDestroyed);
         if (allBreakablesGone) {
-            if (currentLevel < MAX_LEVEL) {
+            if (currentLevel < GameConstants.MAX_LEVEL) {
                 gameState = GameState.LEVEL_COMPLETED;
             } else {
                 gameState = GameState.VICTORY;
@@ -254,7 +256,9 @@ public class GameEngine {
                 if (hitPos > 1) hitPos = 1;
 
                 double speed = Math.hypot(ball.getDx(), ball.getDy());
-                if (speed < 0.0001) speed = 4.0;
+                if (speed < GameConstants.SPEED_THRESHOLD) {
+                    speed = GameConstants.SPEED_AFTER_HIT;
+                }
 
                 double theta = Math.toRadians(hitPos * 60.0);
                 double newDx = speed * Math.sin(theta);
@@ -262,7 +266,7 @@ public class GameEngine {
 
                 ball.setDx(newDx);
                 ball.setDy(newDy);
-                ball.setY(paddle.getY() - ball.getRadius() - 0.01);
+                ball.setY(paddle.getY() - GameConstants.AFTER_HIT_OFFSET);
             }
         }
 
@@ -414,7 +418,7 @@ public class GameEngine {
 
     private void resetBall() {
         balls.clear();
-        balls.add(new Ball(width / 2, height - 100, 10));
+        balls.add(new Ball(GameConstants.BALL_X, GameConstants.BALL_Y, GameConstants.BALL_RADIUS));
         attachBallToPaddle();
     }
 
@@ -424,9 +428,15 @@ public class GameEngine {
         gameUI.drawBackground(gc);
 
         paddle.draw(gc);
-        for (Ball b : balls) b.draw(gc);
-        for (Brick br : bricks) br.draw(gc);
-        for (PowerUp p : powerUps) p.draw(gc);
+        for (Ball b : balls) {
+            b.draw(gc);
+        }
+        for (Brick br : bricks) {
+            br.draw(gc);
+        }
+        for (PowerUp p : powerUps) {
+            p.draw(gc);
+        }
 
         gameUI.drawHUD(gc, score, lives, currentLevel);
 
@@ -448,50 +458,65 @@ public class GameEngine {
         gc.setFill(Color.rgb(0, 0, 0, 0.72));
         gc.fillRect(0, 0, width, height);
 
-        gc.setFill(Color.rgb(255, 215, 100));
-        gc.setFont(Font.font("Times New Roman", FontWeight.BOLD, 44));
+        gc.setFont(Font.font(GameConstants.FONT_NAME, FontWeight.BOLD, GameConstants.TITLE_FONT_SIZE));
+        gc.setFill(new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(255, 255, 180)),
+                new Stop(1, Color.rgb(255, 200, 60))
+        ));
+        gc.setEffect(new DropShadow(25, Color.rgb(255, 180, 0, 0.9)));
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText("LEVEL " + currentLevel + " COMPLETED", width / 2, height / 2 - 40);
+        gc.fillText("LEVEL " + currentLevel + " COMPLETED", GameConstants.TEXT_X,
+                GameConstants.TITLE_Y);
 
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 24));
-        gc.fillText("Score: " + score, width / 2, height / 2 + 5);
-
-        gc.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 18));
-        gc.fillText("Press ENTER to continue to the next level", width / 2, height / 2 + 45);
+        gc.setFont(Font.loadFont(getClass().getResourceAsStream(GameConstants.INSTRUCTION_PATH),
+                GameConstants.INSTRUCTION_FONT_SIZE));
+        gc.fillText("Score: " + score, GameConstants.TEXT_X, GameConstants.SCORE_Y);
+        gc.fillText("Press ENTER to continue to the next level",
+                GameConstants.TEXT_X, GameConstants.GUIDE_Y);
     }
 
     private void drawGameOver() {
-        gc.setFill(Color.rgb(0, 0, 0, 0.72));
+        gc.setFill(Color.rgb(0, 0, 0, 1));
         gc.fillRect(0, 0, width, height);
 
-        gc.setFill(Color.rgb(255, 100, 100));
-        gc.setFont(Font.font("Times New Roman", FontWeight.BOLD, 48));
+        gc.setFont(Font.font(GameConstants.FONT_NAME, FontWeight.BOLD, GameConstants.TITLE_FONT_SIZE));
+        gc.setFill(Color.rgb(255, 60, 60));
+        gc.setEffect(new DropShadow(30, Color.rgb(0, 0, 0, 0.8)));
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText("GAME OVER", width / 2, height / 2 - 20);
+        gc.fillText("GAME OVER!", GameConstants.TEXT_X, GameConstants.TITLE_Y);
 
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 24));
-        gc.fillText("Final Score: " + score, width / 2, height / 2 + 30);
-        gc.fillText("Press ENTER to save & restart", width / 2, height - 20);
+        gc.setFont(Font.loadFont(getClass().getResourceAsStream(GameConstants.INSTRUCTION_PATH),
+                GameConstants.INSTRUCTION_FONT_SIZE));
+        gc.fillText("Final Score: " + score, GameConstants.TEXT_X, GameConstants.SCORE_Y);
+        gc.fillText("Press ENTER to save & restart", GameConstants.TEXT_X, GameConstants.GUIDE_Y);
 
-        gc.fillText("Enter your name:", width / 2, height / 2 + 50);
-        gc.fillText(playerName, width / 2, height / 2 + 70);
+        gc.fillText("Enter your name:", GameConstants.TEXT_X, GameConstants.ENTER_NAME_Y);
+        gc.fillText(playerName, GameConstants.TEXT_X, GameConstants.ENTER_NAME_Y + 30);
     }
 
     private void drawVictory() {
         gc.setFill(Color.rgb(0, 0, 0, 0.72));
         gc.fillRect(0, 0, width, height);
 
-        gc.setFill(Color.rgb(100, 255, 100));
-        gc.setFont(Font.font("Times New Roman", FontWeight.BOLD, 48));
+        gc.setFont(Font.font(GameConstants.FONT_NAME, FontWeight.BOLD, GameConstants.TITLE_FONT_SIZE));
+        gc.setFill(new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(255, 255, 180)),
+                new Stop(1, Color.rgb(255, 220, 100))
+        ));
+        gc.setEffect(new DropShadow(30, Color.rgb(255, 255, 150, 0.9)));
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText("VICTORY!", width / 2, height / 2 - 20);
+        gc.fillText("VICTORY!", GameConstants.TEXT_X, GameConstants.TITLE_Y);
 
         gc.setFill(Color.WHITE);
-        gc.setFont(Font.font("Times New Roman", FontWeight.NORMAL, 24));
-        gc.fillText("Final Score: " + score, width / 2, height / 2 + 30);
-        gc.fillText("Press ENTER to restart", width / 2, height / 2 + 70);
+        gc.setFont(Font.loadFont(getClass().getResourceAsStream(GameConstants.INSTRUCTION_PATH),
+                GameConstants.INSTRUCTION_FONT_SIZE));
+        gc.fillText("Final Score: " + score, GameConstants.TEXT_X, GameConstants.SCORE_Y);
+        gc.fillText("Press ENTER to save & restart", GameConstants.TEXT_X, GameConstants.GUIDE_Y);
+
+        gc.fillText("Enter your name:", GameConstants.TEXT_X, GameConstants.ENTER_NAME_Y);
+        gc.fillText(playerName, GameConstants.TEXT_X, GameConstants.ENTER_NAME_Y + 30);
     }
 
     // Điều khiển
@@ -515,7 +540,7 @@ public class GameEngine {
                     if (hitPos < -1) hitPos = -1;
                     if (hitPos > 1) hitPos = 1;
 
-                    double speed = 4.0;
+                    double speed = GameConstants.SPEED_AFTER_HIT;
                     if (Math.abs(hitPos) < 0.05) {
                         hitPos = Math.copySign(0.173648, Math.random() < 0.5 ? -1 : 1); // ~sin(10°)
                     }
@@ -525,7 +550,7 @@ public class GameEngine {
 
                     ball.setDx(newDx);
                     ball.setDy(newDy);
-                    ball.setSpeed(1.0);
+                    ball.setSpeed(GameConstants.BALL_START_SPEED);
                     ballAttached = false;
                 } else {
                     if (gameState == GameState.PLAYING) {
@@ -558,7 +583,7 @@ public class GameEngine {
                         gameState = GameState.START_MENU;
                     }
                 } else if (gameState == GameState.LEVEL_COMPLETED) {
-                    if (currentLevel < MAX_LEVEL) {
+                    if (currentLevel < GameConstants.MAX_LEVEL) {
                         currentLevel++;
                         loadLevel(currentLevel);
                         gameState = GameState.PLAYING;
@@ -620,10 +645,21 @@ public class GameEngine {
         }
     }
 
-    public List<Ball> getBalls() { return balls; }
-    public Paddle getPaddle() { return paddle; }
-    public double getHeight() { return height; }
-    public void addLive() {lives++;}
+    public List<Ball> getBalls() {
+        return balls;
+    }
+
+    public Paddle getPaddle() {
+        return paddle;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public void addLive() {
+        lives++;
+    }
 }
 
 enum GameState {

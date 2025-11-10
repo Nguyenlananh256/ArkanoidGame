@@ -9,16 +9,18 @@ public class ExpandPaddle extends PowerUp {
     private double newPaddle;
 
     public ExpandPaddle(double x, double y) {
-        super(x, y, 10, 10000, 1);
-        this.normalPaddle = 120;
-        this.newPaddle = 180;
+        super(x, y, GameConstants.PU_RADIUS, GameConstants.EP_DURATION, GameConstants.EP_TYPE);
+        this.normalPaddle = GameConstants.PADDLE_WIDTH;
+        this.newPaddle = GameConstants.EXPANDED_PADDLE_WIDTH;
     }
 
     public void draw(GraphicsContext gc) {
-        if (isDestroyed()) return;
+        if (isDestroyed()) {
+            return;
+        }
         gc.save();
-        Image img = new Image(getClass().getResourceAsStream("/images/ExpandPaddle.png"));
-        gc.drawImage(img, x - getRadius(), y - getRadius(), getRadius() * 2, getRadius() * 2);
+        Image img = new Image(getClass().getResourceAsStream(GameConstants.EP_PATH));
+        gc.drawImage(img, x - radius, y - radius, radius * 2, radius * 2);
     }
 
     @Override

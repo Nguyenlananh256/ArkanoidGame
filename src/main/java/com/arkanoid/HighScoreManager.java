@@ -9,8 +9,6 @@ import java.util.PrimitiveIterator;
 
 public class HighScoreManager {
     private static HighScoreManager instance;
-    private static final String FILE_NAME = "highscores.txt";
-    private static final int MAX_SCORES = 5;
 
     private List<Score> scores = new ArrayList<>();
 
@@ -34,8 +32,8 @@ public class HighScoreManager {
             Score newScore = new Score(name, score);
             scores.add(newScore);
             Collections.sort(scores);
-            if (scores.size() > MAX_SCORES) {
-                scores.remove(MAX_SCORES);
+            if (scores.size() > GameConstants.MAX_SCORES) {
+                scores.remove(GameConstants.MAX_SCORES);
             }
             saveScores();
         }
@@ -43,7 +41,7 @@ public class HighScoreManager {
 
     public void loadScores() {
         scores.clear();
-        File file = new File(FILE_NAME);
+        File file = new File(GameConstants.HIGH_SCORES_FILE);
         if (!file.exists()) {
             return;
         }
@@ -62,7 +60,7 @@ public class HighScoreManager {
     }
 
     public void saveScores() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(GameConstants.HIGH_SCORES_FILE))) {
             for (Score s : scores) {
                 bw.write(s.name + "," + s.score);
                 bw.newLine();
@@ -76,7 +74,7 @@ public class HighScoreManager {
         if (scores.size() < 5) {
             return true;
         }
-        return score > scores.get(MAX_SCORES - 1).score;
+        return score > scores.get(GameConstants.MAX_SCORES - 1).score;
     }
 }
 

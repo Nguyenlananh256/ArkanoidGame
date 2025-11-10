@@ -21,7 +21,7 @@ public class Ball extends GameObject {
     private boolean strong;
 
     private static final Image BALL_IMG =
-            new Image(Ball.class.getResourceAsStream("/images/ball.png"),
+            new Image(Ball.class.getResourceAsStream(GameConstants.BALL_IMAGE_PATH),
                     0, 0, true, true);
 
     // Bật/tắt vẽ bằng ảnh
@@ -39,9 +39,9 @@ public class Ball extends GameObject {
     public Ball(double x, double y, double radius) {
         super(x, y);
         this.radius = radius;
-        this.dx = 3.0;
-        this.dy = -3.0;
-        this.speed = 1.0;
+        this.dx = GameConstants.INITIAL_DX;
+        this.dy = GameConstants.INITIAL_DY;
+        this.speed = GameConstants.BALL_START_SPEED;
         this.strong = false;
 
         Stop[] stops = new Stop[] {
@@ -91,7 +91,7 @@ public class Ball extends GameObject {
         gc.save();
 
         // Nếu bóng đang đứng yên (khi gắn trên paddle), giữ trail chỉ còn đúng 1 điểm hiện tại
-        boolean stationary = Math.abs(dx) + Math.abs(dy) < 1e-6;
+        boolean stationary = Math.abs(dx) + Math.abs(dy) < GameConstants.STATIONARY_THRESHOLD;
         if (stationary) {
             resetTrailToCurrent();
         } else {
@@ -121,7 +121,7 @@ public class Ball extends GameObject {
         } else {
             DropShadow shadow = new DropShadow();
             shadow.setColor(Color.rgb(0, 0, 0, 0.5));
-            shadow.setRadius(10);
+            shadow.setRadius(GameConstants.BALL_RADIUS);
             shadow.setOffsetX(3);
             shadow.setOffsetY(3);
             gc.setEffect(shadow);
@@ -143,25 +143,62 @@ public class Ball extends GameObject {
     }
 
     // Helpers
-    public void reverseY() { dy = -dy; }
-    public void reverseX() { dx = -dx; }
+    public void reverseY() {
+        dy = -dy;
+    }
+
+    public void reverseX() {
+        dx = -dx;
+    }
 
     // Getters / Setters
-    public double getX() { return x; }
-    public double getY() { return y; }
-    public double getDx() { return dx; }
-    public double getDy() { return dy; }
-    public double getRadius() { return radius; }
-    public double getSpeed() { return speed; }
-    public boolean isStrong() { return strong; }
 
-    public void setX(double x) { this.x = x; }
-    public void setY(double y) { this.y = y; }
-    public void setDx(double dx) { this.dx = dx; }
-    public void setDy(double dy) { this.dy = dy; }
-    public void setSpeed(double speed) { this.speed = speed; }
-    public void setStrong(boolean strong) { this.strong = strong; }
 
-    public void setUseImage(boolean useImage) { this.useImage = useImage; }
-    public boolean isUseImage() { return useImage; }
+    public double getDx() {
+        return dx;
+    }
+
+    public void setDx(double dx) {
+        this.dx = dx;
+    }
+
+    public double getDy() {
+        return dy;
+    }
+
+    public void setDy(double dy) {
+        this.dy = dy;
+    }
+
+    public double getRadius() {
+        return radius;
+    }
+
+    public void setRadius(double radius) {
+        this.radius = radius;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
+    public boolean isStrong() {
+        return strong;
+    }
+
+    public void setStrong(boolean strong) {
+        this.strong = strong;
+    }
+
+    public boolean isUseImage() {
+        return useImage;
+    }
+
+    public void setUseImage(boolean useImage) {
+        this.useImage = useImage;
+    }
 }

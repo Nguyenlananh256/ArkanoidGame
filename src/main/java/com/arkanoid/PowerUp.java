@@ -4,7 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import java.util.Random;
 
 public abstract class PowerUp extends GameObject {
-    private double radius;
+    protected double radius;
     private int type;
     private final long duration;
     private boolean expired;
@@ -33,25 +33,49 @@ public abstract class PowerUp extends GameObject {
         else return null;
     }
 
-    public double getX() { return x; }
-    public double getY() { return y; }
-    public double getRadius() { return radius; }
-    public int getType() { return type; }
-    public long getDuration() { return duration; }
-    public boolean isDestroyed() { return destroyed; }
-    public boolean getExpired() { return expired; }
-    public boolean isApplied() { return isApplied; }
-    public long getStartTime() { return startTime; }
+    public double getRadius() {
+        return radius;
+    }
 
-    public void setX(double x) { this.x = x; }
-    public void setY(double y) { this.y = y; }
-    public void setExpired(boolean expired) { this.expired = expired; }
-    public void setApplied(boolean applied) { isApplied = applied; }
-    public void setStartTime() { this.startTime = System.currentTimeMillis(); }
+    public int getType() {
+        return type;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public boolean isDestroyed() {
+        return destroyed;
+    }
+
+    public boolean getExpired() {
+        return expired;
+    }
+
+    public boolean isApplied() {
+        return isApplied;
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setExpired(boolean expired) {
+        this.expired = expired;
+    }
+
+    public void setApplied(boolean applied) {
+        isApplied = applied;
+    }
+
+    public void setStartTime() {
+        this.startTime = System.currentTimeMillis();
+    }
 
     // Rơi xuống; ra khỏi đáy màn thì hủy
     public void update(double height, GameEngine gameEngine) {
-        y += 2;
+        y += GameConstants.FALL_SPEED;
         if (y + radius > height) {
             destroyed = true;
         }
@@ -59,18 +83,15 @@ public abstract class PowerUp extends GameObject {
 
     public abstract void draw(GraphicsContext gc);
 
-    // Sửa điều kiện va chạm Y (trước đó nhầm y - radius < y + paddleH)
+    // Sửa điều kiện va chạm Y
     public boolean checkCollision(Paddle paddle) {
         double paddleX = paddle.getX();
         double paddleY = paddle.getY();
         double paddleW = paddle.getWidth();
         double paddleH = paddle.getHeight();
 
-        boolean hit =
-                (x + radius > paddleX) &&
-                        (x - radius < paddleX + paddleW) &&
-                        (y + radius > paddleY) &&
-                        (y - radius < paddleY + paddleH);
+        boolean hit = (x + radius > paddleX) && (x - radius < paddleX + paddleW)
+                && (y + radius > paddleY) && (y - radius < paddleY + paddleH);
 
         if (hit) {
             destroyed = true;
@@ -80,5 +101,6 @@ public abstract class PowerUp extends GameObject {
     }
 
     public abstract void applyEffect(GameEngine gameEngine);
+
     public abstract void removeEffect(GameEngine gameEngine);
 }

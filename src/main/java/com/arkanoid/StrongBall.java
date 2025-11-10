@@ -6,14 +6,16 @@ import javafx.scene.image.Image;
 public class StrongBall extends PowerUp {
 
     public StrongBall(double x, double y) {
-        super(x, y, 10, 2500, 5);
+        super(x, y, GameConstants.PU_RADIUS, GameConstants.SB_DURATION, GameConstants.SB_TYPE);
     }
 
     public void draw(GraphicsContext gc) {
-        if (isDestroyed()) return;
+        if (isDestroyed()) {
+            return;
+        }
         gc.save();
-        Image img = new Image(getClass().getResourceAsStream("/images/StrongBall.png"));
-        gc.drawImage(img, x - getRadius(), y - getRadius(), getRadius() * 2, getRadius() * 2);
+        Image img = new Image(getClass().getResourceAsStream(GameConstants.SB_PATH));
+        gc.drawImage(img, x - radius, y - radius, radius * 2, radius * 2);
     }
 
     public void applyEffect(GameEngine gameEngine) {

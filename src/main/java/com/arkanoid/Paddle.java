@@ -9,15 +9,15 @@ import java.util.List;
 public class Paddle extends GameObject {
     private double width;
     private double height;
-    private double velocity = 0;  // Vận tốc hiện tại
-    private double acceleration = 1.5;  // Gia tốc
-    private double maxSpeed = 8;  // Tốc độ tối đa
-    private double friction = 0.9;  // Ma sát để dừng mượt
+    private double velocity = GameConstants.INITIAL_PADDLE_VELOCITY;  // Vận tốc hiện tại
+    private double acceleration = GameConstants.ACCELERATION;  // Gia tốc
+    private double maxSpeed = GameConstants.MAX_SPEED;  // Tốc độ tối đa
+    private double friction = GameConstants.FRICTION;  // Ma sát để dừng mượt
     private boolean movingLeft;
     private boolean movingRight;
 
     // Hiệu ứng glow
-    private double glowIntensity = 0;
+    private double glowIntensity = GameConstants.MIN_GLOW;
     private boolean isGlowing = false;
 
     // Trail effect
@@ -50,16 +50,14 @@ public class Paddle extends GameObject {
         // Giới hạn trong màn hình với bounce effect
         if (newX < 0) {
             newX = 0;
-            velocity *= -0.5; // Bounce back effect
-            createImpactParticles(true);
+            velocity *= GameConstants.BOUCE_BACK; // Bounce back effect
         } else if (newX + width > canvasWidth) {
             newX = canvasWidth - width;
-            velocity *= -0.5;
-            createImpactParticles(false);
+            velocity *= GameConstants.BOUCE_BACK;
         }
 
         // Thêm trail effect khi di chuyển nhanh
-        if (Math.abs(velocity) > 3) {
+        if (Math.abs(velocity) > GameConstants.TRAIL_SPEED_THRESHOLD) {
             trails.add(new PaddleTrail(x, y, width, height, Math.abs(velocity) / maxSpeed));
         }
 
@@ -70,9 +68,9 @@ public class Paddle extends GameObject {
 
         // Update glow effect
         if (isGlowing) {
-            glowIntensity = Math.min(1, glowIntensity + 0.1);
+            glowIntensity = Math.min(1, glowIntensity + GameConstants.GLOW_INC);
         } else {
-            glowIntensity = Math.max(0, glowIntensity - 0.05);
+            glowIntensity = Math.max(0, glowIntensity - GameConstants.GLOW_DEC);
         }
     }
 
@@ -82,19 +80,17 @@ public class Paddle extends GameObject {
         for (PaddleTrail trail : trails) {
             trail.draw(gc);
         }
-
-        // Main paddle với hiệu ứng nâng cao
         gc.save();
 
         // Shadow effect động
         DropShadow shadow = new DropShadow();
         shadow.setColor(Color.rgb(0, 100, 255, 0.8));
-        shadow.setRadius(10 + glowIntensity * 20);
-        shadow.setSpread(0.2);
+        shadow.setRadius(GameConstants.SHADOW_BASE + glowIntensity * 20);
+        shadow.setSpread(GameConstants.SHADOW_SPREAD);
         gc.setEffect(shadow);
 
         // Gradient động dựa trên velocity
-        double hue = 200 + Math.abs(velocity) * 5;
+        double hue = GameConstants.HUE_BASE + Math.abs(velocity) * 5;
         Color baseColor = Color.hsb(hue, 0.8, 1.0);
         Color lightColor = baseColor.brighter();
         Color darkColor = baseColor.darker();
@@ -109,7 +105,8 @@ public class Paddle extends GameObject {
 
         // Draw main paddle
         gc.setFill(gradient);
-        gc.fillRoundRect(x, y, width, height, 15, 15);
+        gc.fillRoundRect(x, y, width, height, GameConstants.PADDLE_CORNER_RADIUS,
+                GameConstants.PADDLE_CORNER_RADIUS);
 
         // Inner glow
         if (glowIntensity > 0) {
@@ -119,20 +116,17 @@ public class Paddle extends GameObject {
                     new Stop(1, Color.TRANSPARENT)
             );
             gc.setFill(innerGlow);
-            gc.fillRoundRect(x + 5, y + 2, width - 10, height - 4, 10, 10);
+
+            gc.fillRoundRect(x + 5, y + 2, width - 10, height - 4,
+                    GameConstants.INNER_CORNER_RADIUS, GameConstants.INNER_CORNER_RADIUS);
         }
 
         // Border với hiệu ứng neon
         gc.setStroke(Color.rgb(150, 200, 255, 0.9));
-        gc.setLineWidth(2);
-        gc.strokeRoundRect(x, y, width, height, 15, 15);
-
+        gc.setLineWidth(GameConstants.UNDERLINE_HEIGHT);
+        gc.strokeRoundRect(x, y, width, height, GameConstants.PADDLE_CORNER_RADIUS,
+                GameConstants.PADDLE_CORNER_RADIUS);
         gc.restore();
-    }
-
-    private void createImpactParticles(boolean leftSide) {
-        // Tạo particle khi va chạm cạnh (implement trong GameEngine)
-        isGlowing = true;
     }
 
     public void activateGlow() {
@@ -147,24 +141,45 @@ public class Paddle extends GameObject {
 
     public void setMovingRight(boolean moving) {
         this.movingRight = moving;
-        if (moving) activateGlow();
+        if (moving) {
+            activateGlow();
+        }
     }
 
-    public double getX() { return x; }
-    public double getY() { return y; }
-    public double getWidth() { return width; }
-    public double getHeight() { return height; }
-    public double getVelocity() { return velocity; }
+    public double getX() {
+        return x;
+    }
 
+    public double getY() {
+        return y;
+    }
 
-    public void setX(double x) { this.x = x; }
-    public void setY(double y) { this.y = y; }
+    public double getWidth() {
+        return width;
+    }
 
+    public double getHeight() {
+        return height;
+    }
 
-    public void setWidth(double width) { this.width = width; }
+    public double getVelocity() {
+        return velocity;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setWidth(double width) {
+        this.width = width;
+    }
 }
 
-// Inner class cho trail effect
+// Trail effect
 class PaddleTrail extends GameObject {
     private double width;
     private double height;
@@ -174,17 +189,18 @@ class PaddleTrail extends GameObject {
         super(x, y);
         this.width = width;
         this.height = height;
-        this.opacity = intensity * 0.3;
+        this.opacity = intensity * GameConstants.TRAIL_OPACITY_FACTOR;
     }
 
     public boolean update() {
-        opacity -= 0.05;
+        opacity -= GameConstants.TRAIL_OPACITY_DEC;
         return opacity > 0;
     }
 
     @Override
     public void draw(GraphicsContext gc) {
         gc.setFill(Color.rgb(100, 150, 255, opacity));
-        gc.fillRoundRect(x, y, width, height, 15, 15);
+        gc.fillRoundRect(x, y, width, height, GameConstants.PADDLE_CORNER_RADIUS,
+                GameConstants.PADDLE_CORNER_RADIUS);
     }
 }

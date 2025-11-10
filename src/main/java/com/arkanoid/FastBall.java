@@ -9,16 +9,16 @@ public class FastBall extends PowerUp {
     private double newSpeed;
 
     public FastBall(double x, double y) {
-        super(x, y, 10, 10000, 2);
-        this.normalSpeed = 1;
-        this.newSpeed = 1.25;
+        super(x, y, GameConstants.PU_RADIUS, GameConstants.FB_DURATION, GameConstants.FB_TYPE);
+        this.normalSpeed = GameConstants.BALL_START_SPEED;
+        this.newSpeed = GameConstants.BALL_FAST_SPEED;
     }
 
     public void draw(GraphicsContext gc) {
         if (isDestroyed()) return;
         gc.save();
-        Image img = new Image(getClass().getResourceAsStream("/images/FastBall.png"));
-        gc.drawImage(img, x - getRadius(), y - getRadius(), getRadius() * 2, getRadius() * 2);
+        Image img = new Image(getClass().getResourceAsStream(GameConstants.FB_PATH));
+        gc.drawImage(img, x - radius, y - radius, radius * 2, radius * 2);
     }
 
     @Override
