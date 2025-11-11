@@ -87,7 +87,7 @@ public final class GameConstants {
     public static final int STRONGBRICK_HIT_POINTS = 3;
     public static final double BRICK_WIDTH = 70;
     public static final double BRICK_HEIGHT = 25;
-    public static final double PADDING = 5;
+    public static final double PADDING = 3;
 
     // Power-up
     public static final Image EP_IMG = new Image(GameConstants.class.getResourceAsStream("/images/ExpandPaddle.png"));
@@ -120,7 +120,7 @@ public final class GameConstants {
     public static final String FONT_NAME = "Times New Roman";
 
     public static final double GAME_TITLE_FONT_SIZE = 100;
-    public static final double TITLE_FONT_SIZE = 55;
+    public static final double TITLE_FONT_SIZE = 65;
     public static final double SCOREBOARD_TITLE_FONT_SIZE = 20;
     public static final double INSTRUCTION_FONT_SIZE = 15;
     public static final double SCORE_FONT_SIZE = 24;

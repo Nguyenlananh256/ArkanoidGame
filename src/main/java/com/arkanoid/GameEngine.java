@@ -315,7 +315,7 @@ public class GameEngine {
                 // Gạch thường/strong/bomb: âm thanh
                 playHitSound();
 
-                // Bóng mạnh: xuyên hoặc tùy chỉnh
+                // Bóng mạnh
                 if (ball.isStrong()) {
                     boolean wasDestroyed = brick.isDestroyed();
                     brick.takeHit(bricks, levelRows, levelCols);
