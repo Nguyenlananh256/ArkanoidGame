@@ -227,7 +227,7 @@ public class GameUI {
                 GameConstants.INSTRUCTION_FONT_SIZE));
         gc.fillText("Press ENTER to Start...", GameConstants.TEXT_X,
                 GameConstants.GUIDE_Y);
-        gc.fillText("← → to move | SPACE to launch/pause", GameConstants.TEXT_X,
+        gc.fillText("[←] [→] Move | [SPACE] Launch/Pause | [ESC] Return", GameConstants.TEXT_X,
                 GameConstants.MOVE_GUIDE_Y);
 
         drawScoreBoard(gc);
