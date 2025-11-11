@@ -44,9 +44,13 @@ public class LevelManager {
 
                 if (row == 0) {
                     bricks.add(new SilverBrick(x, y, GameConstants.BRICK_WIDTH, GameConstants.BRICK_HEIGHT, 0)); // hàng chắn trên
+                } else if (row == 1) {
+                    bricks.add(new StrongBrick(x, y, GameConstants.BRICK_WIDTH, GameConstants.BRICK_HEIGHT, points[row])); // hàng mạnh
+                } else if (row == 2 && col % 4 == 1) {
+                    bricks.add(new BombBrick(x, y, GameConstants.BRICK_WIDTH, GameConstants.BRICK_HEIGHT, points[row])); // bom thưa
+                } else {
+                    bricks.add(new Brick(x, y, GameConstants.BRICK_WIDTH, GameConstants.BRICK_HEIGHT, points[row])); // thường
                 }
-
-
             }
         }
     }
