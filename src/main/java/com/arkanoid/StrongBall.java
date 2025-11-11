@@ -1,7 +1,8 @@
 package com.arkanoid;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
+
+import static com.arkanoid.GameConstants.SB_IMG;
 
 public class StrongBall extends PowerUp {
 
@@ -14,8 +15,8 @@ public class StrongBall extends PowerUp {
             return;
         }
         gc.save();
-        Image img = new Image(getClass().getResourceAsStream(GameConstants.SB_PATH));
-        gc.drawImage(img, x - radius, y - radius, radius * 2, radius * 2);
+        //Image img = new Image(getClass().getResourceAsStream(GameConstants.SB_PATH));
+        gc.drawImage(SB_IMG, x - radius, y - radius, radius * 2, radius * 2);
     }
 
     public void applyEffect(GameEngine gameEngine) {

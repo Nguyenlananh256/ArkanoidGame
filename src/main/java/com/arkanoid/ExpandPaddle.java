@@ -1,7 +1,8 @@
 package com.arkanoid;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
+
+import static com.arkanoid.GameConstants.EP_IMG;
 
 public class ExpandPaddle extends PowerUp {
 
@@ -19,8 +20,8 @@ public class ExpandPaddle extends PowerUp {
             return;
         }
         gc.save();
-        Image img = new Image(getClass().getResourceAsStream(GameConstants.EP_PATH));
-        gc.drawImage(img, x - radius, y - radius, radius * 2, radius * 2);
+        //Image img = new Image(getClass().getResourceAsStream(GameConstants.EP_PATH));
+        gc.drawImage(EP_IMG, x - radius, y - radius, radius * 2, radius * 2);
     }
 
     @Override

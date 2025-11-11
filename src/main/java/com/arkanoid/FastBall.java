@@ -1,7 +1,8 @@
 package com.arkanoid;
 
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
+
+import static com.arkanoid.GameConstants.FB_IMG;
 
 public class FastBall extends PowerUp {
 
@@ -17,8 +18,8 @@ public class FastBall extends PowerUp {
     public void draw(GraphicsContext gc) {
         if (isDestroyed()) return;
         gc.save();
-        Image img = new Image(getClass().getResourceAsStream(GameConstants.FB_PATH));
-        gc.drawImage(img, x - radius, y - radius, radius * 2, radius * 2);
+        //Image img = new Image(getClass().getResourceAsStream(GameConstants.FB_PATH));
+        gc.drawImage(FB_IMG, x - radius, y - radius, radius * 2, radius * 2);
     }
 
     @Override

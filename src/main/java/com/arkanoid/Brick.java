@@ -5,6 +5,8 @@ import javafx.scene.image.Image;
 
 import java.util.List;
 
+import static com.arkanoid.GameConstants.*;
+
 enum BrickKind {
     NORMAL,
     STRONG,
@@ -35,8 +37,7 @@ public class Brick extends GameObject {
     @Override
     public void draw(GraphicsContext gc) {
         if (isDestroyed()) return;
-        Image img = new Image(getClass().getResourceAsStream(GameConstants.BRICK_PATH));
-        gc.drawImage(img, x, y, width, height);
+        gc.drawImage(BRICK_IMG, x, y, width, height);
     }
 
     public boolean isDestroyed() {
@@ -80,11 +81,11 @@ class StrongBrick extends Brick {
         if (isDestroyed()) return;
         Image img = null;
         if (hitPoints == GameConstants.STRONGBRICK_HIT_POINTS) {
-            img = new Image(getClass().getResourceAsStream(GameConstants.STRONGBRICK1_PATH));
+            img = STRONGBRICK1_IMG;
         } else if (hitPoints == GameConstants.STRONGBRICK_HIT_POINTS - 1) {
-            img = new Image(getClass().getResourceAsStream(GameConstants.STRONGBRICK2_PATH));
+            img = STRONGBRICK2_IMG;
         } else if (hitPoints == GameConstants.STRONGBRICK_HIT_POINTS - 2) {
-            img = new Image(getClass().getResourceAsStream(GameConstants.STRONGBRICK3_PATH));
+            img = STRONGBRICK3_IMG;
         }
         gc.drawImage(img, x, y, getWidth(), getHeight());
     }
@@ -103,8 +104,7 @@ class SilverBrick extends Brick {
 
     public void draw(GraphicsContext gc) {
         if (isDestroyed()) return;
-        Image img = new Image(getClass().getResourceAsStream(GameConstants.SILVERBRICK_PATH));
-        gc.drawImage(img, x, y, getWidth(), getHeight());
+        gc.drawImage(SILVERBRICK_IMG, x, y, getWidth(), getHeight());
     }
 
     @Override
@@ -122,8 +122,7 @@ class BombBrick extends Brick {
     public void draw(GraphicsContext gc) {
         if (isDestroyed()) return;
 
-        Image img = new Image(getClass().getResourceAsStream(GameConstants.BOMBBRICK_PATH));
-        gc.drawImage(img, x, y, getWidth(), getHeight());
+        gc.drawImage(BOMBBRICK_IMG, x, y, getWidth(), getHeight());
     }
 
     @Override

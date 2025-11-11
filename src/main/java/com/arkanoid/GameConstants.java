@@ -1,7 +1,7 @@
 package com.arkanoid;
 
 
-import javafx.scene.paint.Color;
+import javafx.scene.image.Image;
 
 public final class GameConstants {
     // Screen
@@ -77,12 +77,12 @@ public final class GameConstants {
     public static final double AFTER_HIT_OFFSET = BALL_RADIUS + 0.01;
 
     // Brick
-    public static final String BRICK_PATH = "/images/brick.png";
-    public static final String STRONGBRICK1_PATH = "/images/strong_brick1.png";
-    public static final String STRONGBRICK2_PATH = "/images/strong_brick2.png";
-    public static final String STRONGBRICK3_PATH = "/images/strong_brick3.png";
-    public static final String SILVERBRICK_PATH = "/images/silver_brick.png";
-    public static final String BOMBBRICK_PATH = "/images/bomb_brick.png";
+    public static final Image BRICK_IMG = new Image(GameConstants.class.getResourceAsStream("/images/brick.png"));
+    public static final Image STRONGBRICK1_IMG = new Image(GameConstants.class.getResourceAsStream("/images/strong_brick1.png"));
+    public static final Image STRONGBRICK2_IMG = new Image(GameConstants.class.getResourceAsStream("/images/strong_brick2.png"));
+    public static final Image STRONGBRICK3_IMG = new Image(GameConstants.class.getResourceAsStream("/images/strong_brick3.png"));
+    public static final Image SILVERBRICK_IMG = new Image(GameConstants.class.getResourceAsStream("/images/silver_brick.png"));
+    public static final Image BOMBBRICK_IMG = new Image(GameConstants.class.getResourceAsStream("/images/bomb_brick.png"));
     public static final int BRICK_HIT_POINTS = 1;
     public static final int STRONGBRICK_HIT_POINTS = 3;
     public static final double BRICK_WIDTH = 70;
@@ -90,11 +90,11 @@ public final class GameConstants {
     public static final double PADDING = 5;
 
     // Power-up
-    public static final String EP_PATH = "/images/ExpandPaddle.png";
-    public static final String FB_PATH = "/images/FastBall.png";
-    public static final String EB_PATH = "/images/ExtraBall.png";
-    public static final String EL_PATH = "/images/ExtraLife.png";
-    public static final String SB_PATH = "/images/StrongBall.png";
+    public static final Image EP_IMG = new Image(GameConstants.class.getResourceAsStream("/images/ExpandPaddle.png"));
+    public static final Image FB_IMG = new Image(GameConstants.class.getResourceAsStream("/images/FastBall.png"));
+    public static final Image EB_IMG = new Image(GameConstants.class.getResourceAsStream("/images/ExtraBall.png"));
+    public static final Image EL_IMG = new Image(GameConstants.class.getResourceAsStream("/images/ExtraLife.png"));
+    public static final Image SB_IMG = new Image(GameConstants.class.getResourceAsStream("/images/StrongBall.png"));
 
     public static final double PU_RADIUS = 10;
     public static final double PU_DIAMETER = PU_RADIUS * 2;
