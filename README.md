@@ -16,7 +16,8 @@ This is a classic Arkanoid game developed in Java as a final project for Object-
 **Key features:**
 1.	The game is developed using Java 17+ with JavaFX/Swing for GUI.  
 2.	Implements core OOP principles: Encapsulation, Inheritance, Polymorphism, and Abstraction.  
-3.	Applies multiple design patterns: Singleton.  
+3.	Applies multiple design patterns: Singleton, Factory Method, Strategy, Observer, and State.  
+Features multithreading for smooth gameplay and responsive UI.  
 4.	Includes sound effects, animations, and power-up systems.  
 5.	Supports save/load game functionality and leaderboard system.
 
@@ -28,7 +29,10 @@ This is a classic Arkanoid game developed in Java as a final project for Object-
 •	Score points and compete on the leaderboard  
 ________________________________________
 ## UML Diagram
-### Class Diagram
+### Class Diagram  
+
+<img width="1471" height="1227" alt="test" src="https://github.com/user-attachments/assets/9c0f408d-e777-4836-8c79-cc05fbefdef1" />
+
 ________________________________________
 ## Design Patterns Implementation
 ### 1. Singleton Pattern
@@ -85,13 +89,18 @@ ________________________________________
 ## Demo
 ### Screenshots
 #### Main Menu
+<img width="1556" height="1260" alt="Screenshot 2025-11-10 192727" src="https://github.com/user-attachments/assets/3ced8782-7587-4559-8a76-ccb3a62c6a36" />
 
 #### Gameplay
+<img width="1048" height="848" alt="Screenshot 2025-11-10 204146" src="https://github.com/user-attachments/assets/737e102b-7fc3-40df-bc49-840419fc2872" />
 
 #### Power-ups in Action
+<img width="974" height="787" alt="Screenshot 2025-11-11 122052" src="https://github.com/user-attachments/assets/85477e81-72a8-4acc-92e6-d52f72833c60" />
 
 #### Video Demo
 
+https://github.com/user-attachments/assets/a147ef57-447f-483b-b5a9-5c2c1ea7597d
+  
 ________________________________________
 ## Future Improvements
 #### Planned Features  
