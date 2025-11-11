@@ -7,7 +7,7 @@ Group 8 - Class INT2204_1 (OOP 1)
 3.	Đào Văn Toàn - 24020325  
 4.	Nguyễn Minh Tú - 24020343
 
-**Instructor:** Kiều Văn Tuyên  
+**Instructor:** Nguyễn Đức Anh - Kiều Văn Tuyên  
 **Semester:** HK1 – 2025–2026 
 ________________________________________
 ## Description
@@ -29,9 +29,10 @@ Features multithreading for smooth gameplay and responsive UI.
 •	Score points and compete on the leaderboard  
 ________________________________________
 ## UML Diagram
-### Class Diagram  
+### Class Diagram
 
-<img width="1471" height="1227" alt="test" src="https://github.com/user-attachments/assets/9c0f408d-e777-4836-8c79-cc05fbefdef1" />
+<img width="1471" height="2299" alt="demo" src="https://github.com/user-attachments/assets/29365fa5-0652-4392-90dd-4f335d8118f4" />
+
 
 ________________________________________
 ## Design Patterns Implementation
@@ -137,4 +138,4 @@ ________________________________________
 •	Some assets (images, sounds) may be used for educational purposes under fair use.  
 •	The project demonstrates practical application of OOP concepts and design patterns.  
 ________________________________________
-*Last updated: 10/11/2025*
+*Last updated: 11/11/2025*
