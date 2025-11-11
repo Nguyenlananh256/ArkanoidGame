@@ -176,6 +176,7 @@ public class GameEngine {
         bricks = levelManager.buildLevel(currentLevel);
         balls.clear();
         balls.add(new Ball(GameConstants.BALL_X, GameConstants.BALL_Y, GameConstants.BALL_RADIUS));
+        paddle.reset();
         attachBallToPaddle();
     }
 
@@ -602,6 +603,7 @@ public class GameEngine {
                 if (gameState == GameState.START_MENU) {
                     break;
                 } else {
+                    restartGame();
                     gameState = GameState.START_MENU;
                     if (bgmPlayer != null) {
                         bgmPlayer.stop();

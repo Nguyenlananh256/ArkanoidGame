@@ -129,6 +129,12 @@ public class Paddle extends GameObject {
         gc.restore();
     }
 
+    public void reset() {
+        setX(GameConstants.PADDLE_X);
+        setY(GameConstants.PADDLE_Y);
+        setWidth(GameConstants.PADDLE_WIDTH);
+    }
+
     public void activateGlow() {
         isGlowing = true;
     }
