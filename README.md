@@ -122,10 +122,9 @@ ________________________________________
 ## Technologies Used
 | **Technology** | **Version** | **Purpose** |
 |-----|-----|----|
-| Java | 17+ | Core language |
+| Java | 17 | Core language |
 | JavaFX | 19.0.2 |	GUI framework |
 | Maven |	3.9+ | Build tool |
-| Jackson | 2.15.0 | JSON processing |
 ________________________________________
 ## License  
 This project is developed for educational purposes only.  
